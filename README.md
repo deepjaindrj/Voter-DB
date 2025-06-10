@@ -58,7 +58,7 @@ Follow these steps to run the project locally:
   ```bash
   npm run dev
 4.**Open your browser at:** http://localhost:5173
-
+```
 ## ⚙️ Tech Stack
 Frontend: React, Tailwind CSS
 Auth: Email/Password + Google & GitHub OAuth
