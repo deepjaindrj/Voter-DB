@@ -60,13 +60,13 @@ Follow these steps to run the project locally:
 4.**Open your browser at:** http://localhost:5173
 ```
 ## ⚙️ Tech Stack
-Frontend: React, Tailwind CSS
-Auth: Email/Password + Google & GitHub OAuth
-File Support: CSV parsing for import/export
-Deployment: Vercel
+   Frontend: React, Tailwind CSS
+   Auth: Email/Password + Google & GitHub OAuth
+   File Support: CSV parsing for import/export
+   Deployment: Vercel
 
 ## 🗂️ Project Structure
-Voter-DB/
+```Voter-DB/
 ├── public/
 ├── src/
 │   ├── components/        # Reusable UI components
@@ -77,6 +77,6 @@ Voter-DB/
 ├── .env                   # Environment variables (if needed)
 ├── package.json
 └── README.md
-
+```
 ## Author
 **Deep Jain**
