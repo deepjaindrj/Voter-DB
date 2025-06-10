@@ -1,8 +1,9 @@
 import React, { useState, useRef } from 'react';
-import { Download, Upload, FileText, Users, AlertCircle, CheckCircle } from 'lucide-react';
+import { Download, Upload, AlertCircle, CheckCircle, FileText } from 'lucide-react';
 import { useVoters } from '../contexts/VoterContext';
 import { downloadCSV, parseCSV } from '../utils/csvUtils';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
+import StatsSection from '../components/ui/StatsSection';
 
 const Dashboard = () => {
   const { voters, importVoters, loading } = useVoters();
@@ -15,7 +16,6 @@ const Dashboard = () => {
   const handleExport = async () => {
     setExportLoading(true);
     try {
-      // Simulate API call delay
       await new Promise(resolve => setTimeout(resolve, 1000));
       downloadCSV(voters, 'voters-export.csv');
       setMessage({ type: 'success', text: `Successfully exported ${voters.length} voters to CSV` });
@@ -46,12 +46,8 @@ const Dashboard = () => {
     try {
       const csvText = await uploadedFile.text();
       const parsedVoters = parseCSV(csvText);
-      
       await importVoters(parsedVoters);
-      setMessage({ 
-        type: 'success', 
-        text: `Successfully imported ${parsedVoters.length} voters` 
-      });
+      setMessage({ type: 'success', text: `Successfully imported ${parsedVoters.length} voters` });
       setUploadedFile(null);
       fileInputRef.current.value = '';
     } catch (error) {
@@ -76,33 +72,6 @@ const Dashboard = () => {
     }
   };
 
-  const stats = [
-    {
-      name: 'Total Voters',
-      value: voters.length,
-      icon: Users,
-      color: 'bg-primary-500'
-    },
-    {
-      name: 'Male Voters',
-      value: voters.filter(v => v.gender === 'Male').length,
-      icon: Users,
-      color: 'bg-blue-500'
-    },
-    {
-      name: 'Female Voters',
-      value: voters.filter(v => v.gender === 'Female').length,
-      icon: Users,
-      color: 'bg-pink-500'
-    },
-    {
-      name: 'Average Age',
-      value: Math.round(voters.reduce((sum, v) => sum + v.age, 0) / voters.length) || 0,
-      icon: FileText,
-      color: 'bg-green-500'
-    }
-  ];
-
   return (
     <div className="space-y-8">
       {/* Header */}
@@ -114,30 +83,13 @@ const Dashboard = () => {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {stats.map((stat) => {
-          const Icon = stat.icon;
-          return (
-            <div key={stat.name} className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-              <div className="flex items-center">
-                <div className={`${stat.color} rounded-lg p-3`}>
-                  <Icon className="h-6 w-6 text-white" />
-                </div>
-                <div className="ml-4">
-                  <p className="text-sm font-medium text-gray-600">{stat.name}</p>
-                  <p className="text-2xl font-bold text-gray-900">{stat.value}</p>
-                </div>
-              </div>
-            </div>
-          );
-        })}
-      </div>
+      <StatsSection voters={voters} />
 
       {/* Message */}
       {message.text && (
         <div className={`rounded-lg p-4 border ${
-          message.type === 'success' 
-            ? 'bg-green-50 border-green-200 text-green-700' 
+          message.type === 'success'
+            ? 'bg-green-50 border-green-200 text-green-700'
             : 'bg-red-50 border-red-200 text-red-700'
         }`}>
           <div className="flex items-center">
@@ -164,7 +116,7 @@ const Dashboard = () => {
             className="btn-primary flex items-center"
           >
             {exportLoading ? (
-              <LoadingSpinner size="small\" className="mr-2" />
+              <LoadingSpinner size="small" className="mr-2" />
             ) : (
               <Download className="h-4 w-4 mr-2" />
             )}
@@ -197,9 +149,7 @@ const Dashboard = () => {
                 browse
               </button>
             </p>
-            <p className="text-sm text-gray-500">
-              Supports CSV files up to 10MB
-            </p>
+            <p className="text-sm text-gray-500">Supports CSV files up to 10MB</p>
           </div>
           <input
             ref={fileInputRef}
@@ -216,9 +166,7 @@ const Dashboard = () => {
             <div className="flex items-center justify-between">
               <div className="flex items-center">
                 <FileText className="h-5 w-5 text-gray-500 mr-2" />
-                <span className="text-sm font-medium text-gray-900">
-                  {uploadedFile.name}
-                </span>
+                <span className="text-sm font-medium text-gray-900">{uploadedFile.name}</span>
                 <span className="text-sm text-gray-500 ml-2">
                   ({(uploadedFile.size / 1024).toFixed(1)} KB)
                 </span>
@@ -229,7 +177,7 @@ const Dashboard = () => {
                 className="btn-primary flex items-center"
               >
                 {importLoading ? (
-                  <LoadingSpinner size="small\" className="mr-2" />
+                  <LoadingSpinner size="small" className="mr-2" />
                 ) : (
                   <Upload className="h-4 w-4 mr-2" />
                 )}
@@ -239,12 +187,12 @@ const Dashboard = () => {
           </div>
         )}
 
-        {/* Sample Format */}
+        {/* Sample Format Info */}
         <div className="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
           <h3 className="text-sm font-medium text-blue-900 mb-2">Expected CSV Format:</h3>
           <p className="text-sm text-blue-700">
-            Your CSV should include headers: Voter ID, Full Name, First Name, Last Name, 
-            Relative Name, House No, Address Line 1, Address Line 2, Gender, Age, 
+            Your CSV should include headers: Voter ID, Full Name, First Name, Last Name,
+            Relative Name, House No, Address Line 1, Address Line 2, Gender, Age,
             Mobile Number, Caste, etc.
           </p>
           <p className="text-sm text-blue-700 mt-1">

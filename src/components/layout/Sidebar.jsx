@@ -56,7 +56,7 @@ const Sidebar = () => {
             <div className="ml-3 transition-all duration-300">
               <div className="flex items-center space-x-1">
                 <span className="text-lg font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">
-                  VoteAdmin
+                  VoterDB
                 </span>
                 <Sparkles className="h-4 w-4 text-green-500 animate-pulse" />
               </div>
@@ -237,9 +237,9 @@ const Sidebar = () => {
 
           {/* Sidebar panel with slide animation */}
           <div
-            className={`absolute inset-y-0 left-0 w-72 bg-white/95 backdrop-blur-xl shadow-2xl border-r border-gray-200/50 
+           className={`absolute inset-y-0 left-0 w-72 bg-white/95 backdrop-blur-xl shadow-2xl border-r border-gray-200/50 
               transform transition-transform duration-300 ease-in-out
-              ${isMobileOpen ? 'translate-x-0' : '-translate-x-full'}
+              ${isMobileOpen ? 'translate-x-0 pointer-events-auto' : '-translate-x-full pointer-events-none'}
             `}
           >
             <SidebarContent isMobile />

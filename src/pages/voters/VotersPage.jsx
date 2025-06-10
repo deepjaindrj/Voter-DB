@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { Search, Filter, Plus, Eye, Edit, Printer, ChevronLeft, ChevronRight, MoreHorizontal, X } from 'lucide-react';
+import { Search, Filter, Plus, Eye, Edit, Printer, ChevronLeft, ChevronRight, X, Trash2 } from 'lucide-react';
 import { useVoters } from '../../contexts/VoterContext';
 import Modal from '../../components/ui/Modal';
 import VoterForm from './VoterForm';
@@ -8,7 +8,7 @@ import VoterDetails from './VoterDetails';
 const ITEMS_PER_PAGE = 25;
 
 const VotersPage = () => {
-  const { voters } = useVoters();
+  const { voters, deleteVoter } = useVoters();
   const [searchTerm, setSearchTerm] = useState('');
   const [filters, setFilters] = useState({
     gender: '',
@@ -78,6 +78,14 @@ const VotersPage = () => {
     setSelectedVoter(voter);
     setShowEditModal(true);
   };
+
+  const handleDelete = async (voter) => {
+    const confirmDelete = window.confirm(`Are you sure you want to delete ${voter.fullName}?`);
+    if (confirmDelete) {
+      await deleteVoter(voter.id);
+    }
+  };
+
 
   const handlePrint = () => {
     window.print();
@@ -296,71 +304,127 @@ const VotersPage = () => {
 
         {/* Table */}
         <div className="overflow-x-auto">
-          <table className="supabase-table">
+          <table className="w-full min-w-full text-sm text-left text-gray-700 border-collapse">
             <thead>
-              <tr>
-                <th className="w-32">Voter ID</th>
-                <th className="min-w-48">Full name</th>
-                <th className="w-24">Gender</th>
-                <th className="w-16">Age</th>
-                <th className="w-32">Mobile</th>
-                <th className="min-w-64">Address</th>
-                <th className="w-24">House no</th>
-                <th className="w-20"></th>
+              <tr className="bg-gradient-to-r from-gray-50 to-gray-100/50 border-b border-gray-200">
+                <th className="w-32 px-6 py-4">
+                  <span className="text-xs font-semibold text-gray-600 uppercase tracking-wide">Voter ID</span>
+                </th>
+                <th className="min-w-48 px-6 py-4">
+                  <span className="text-xs font-semibold text-gray-600 uppercase tracking-wide">Full Name</span>
+                </th>
+                <th className="w-24 px-6 py-4">
+                  <span className="text-xs font-semibold text-gray-600 uppercase tracking-wide">Gender</span>
+                </th>
+                <th className="w-16 px-6 py-4">
+                  <span className="text-xs font-semibold text-gray-600 uppercase tracking-wide">Age</span>
+                </th>
+                <th className="w-32 px-6 py-4">
+                  <span className="text-xs font-semibold text-gray-600 uppercase tracking-wide">Mobile</span>
+                </th>
+                <th className="min-w-64 px-6 py-4">
+                  <span className="text-xs font-semibold text-gray-600 uppercase tracking-wide">Address</span>
+                </th>
+                <th className="w-24 px-6 py-4">
+                  <span className="text-xs font-semibold text-gray-600 uppercase tracking-wide">House No</span>
+                </th>
+                <th className="w-20 px-6 py-4 text-right">
+                  <span className="text-xs font-semibold text-gray-600 uppercase tracking-wide">Actions</span>
+                </th>
               </tr>
             </thead>
-            <tbody>
+
+            <tbody className="divide-y divide-gray-100">
               {paginatedVoters.map((voter) => (
-                <tr key={voter.id}>
-                  <td className="font-mono text-xs">{voter.voterId}</td>
-                  <td className="font-medium">{voter.fullName}</td>
-                  <td>
-                    <span className={`badge ${
-                      voter.gender === 'Male' ? 'badge-male' :
-                      voter.gender === 'Female' ? 'badge-female' :
-                      'badge-other'
-                    }`}>
+                <tr key={voter.id} className="hover:bg-gray-50 transition-colors duration-200 group">
+                  {/* Voter ID */}
+                  <td className="px-6 py-4 font-mono text-xs text-gray-600">{voter.voterId}</td>
+
+                  {/* Full Name */}
+                  <td className="px-6 py-4">
+                    <div className="flex items-center space-x-4">
+                      <div className="w-8 h-8 bg-gradient-to-br from-emerald-400 to-emerald-500 rounded-full flex items-center justify-center">
+                        <span className="text-white text-sm font-semibold">
+                          {voter.fullName.charAt(0)}
+                        </span>
+                      </div>
+                      <span className="text-sm font-medium text-gray-900">{voter.fullName}</span>
+                    </div>
+                  </td>
+
+                  {/* Gender */}
+                  <td className="px-6 py-4">
+                    <span className={`
+                      inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium border
+                      ${
+                        voter.gender === 'Male'
+                          ? 'bg-blue-50 text-blue-700 border-blue-200'
+                          : voter.gender === 'Female'
+                          ? 'bg-pink-50 text-pink-700 border-pink-200'
+                          : 'bg-gray-50 text-gray-700 border-gray-200'
+                      }
+                    `}>
                       {voter.gender}
                     </span>
                   </td>
-                  <td>{voter.age}</td>
-                  <td className="font-mono text-xs">{voter.mobileNumber}</td>
-                  <td className="max-w-xs">
-                    <div className="truncate" title={`${voter.addressLine1}, ${voter.addressLine2}`}>
+
+                  {/* Age */}
+                  <td className="px-6 py-4">
+                    <span className="text-sm font-medium text-gray-900 bg-gray-100 px-2 py-1 rounded-lg">
+                      {voter.age}
+                    </span>
+                  </td>
+
+                  {/* Mobile */}
+                  <td className="px-6 py-4 font-mono text-xs text-gray-600">{voter.mobileNumber}</td>
+
+                  {/* Address */}
+                  <td className="px-6 py-4 max-w-xs">
+                    <div className="truncate text-sm text-gray-900" title={`${voter.addressLine1}${voter.addressLine2 ? `, ${voter.addressLine2}` : ''}`}>
                       {voter.addressLine1}
                       {voter.addressLine2 && `, ${voter.addressLine2}`}
                     </div>
                   </td>
-                  <td>{voter.houseNo}</td>
-                  <td>
-                    <div className="flex items-center justify-end space-x-1">
+
+                  {/* House No */}
+                  <td className="px-6 py-4">
+                    <span className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-blue-50 text-blue-700 border border-blue-200">
+                      {voter.houseNo}
+                    </span>
+                  </td>
+
+                  {/* Actions */}
+                  <td className="px-6 py-4 text-right">
+                    <div className="flex items-center justify-end space-x-1 opacity-70 group-hover:opacity-100 transition-opacity duration-200">
                       <button
                         onClick={() => handleView(voter)}
-                        className="table-action-btn"
+                        className="p-2 rounded-lg text-emerald-400 hover:text-emerald-600 hover:bg-emerald-50 transition-all duration-200 hover:scale-110"
                         title="View details"
                       >
                         <Eye className="h-4 w-4" />
                       </button>
                       <button
                         onClick={() => handleEdit(voter)}
-                        className="table-action-btn"
+                        className="p-2 rounded-lg text-blue-400 hover:text-blue-600 hover:bg-blue-50 transition-all duration-200 hover:scale-110"
                         title="Edit voter"
                       >
                         <Edit className="h-4 w-4" />
                       </button>
                       <button
-                        className="table-action-btn"
-                        title="More options"
+                        onClick={() => handleDelete(voter)}
+                        className="p-2 rounded-lg text-red-400 hover:text-red-600 hover:bg-red-50 transition-all duration-200 hover:scale-110"
+                        title="Delete voter"
                       >
-                        <MoreHorizontal className="h-4 w-4" />
+                        <Trash2 className="h-4 w-4" />
                       </button>
+
                     </div>
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
-        </div>
+          </div>
 
         {/* Pagination */}
         {totalPages > 1 && (
